@@ -2,7 +2,12 @@
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
 
-   <scroll class="content">
+   <scroll class="content"
+           ref="scroll"
+           :probe-type="3"
+           @scroll="contentScroll"
+           :pull-up-load="true">
+<!--           @pullingUp="loadMore"-->
      <home-swiper :banners="banners"/>
      <recommend-view :recommends="recommends"/>
      <feature-view/>
@@ -11,7 +16,7 @@
                   @tabClick="tabClick"/>
      <goods-list :goods="showGoods"/>
    </scroll>
-    <back-top/>
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
 
   </div>
 </template>
@@ -30,7 +35,7 @@ import GoodsList from "components/content/goods/GoodsList";
 import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
 
-// 方法导入
+// 封装的网络请求的方法导入
 import {getHomeMultidata, getHomeGoods} from "network/home";
 
 
@@ -58,7 +63,8 @@ export default {
         'new': {page: 0, list: []},
         'sell': {page: 0, list: []}
       },
-      currentType: 'pop'
+      currentType: 'pop',
+      isShowBackTop: false
     }
   },
   computed: {
@@ -90,7 +96,17 @@ export default {
           break
       }
     },
-
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0)
+    },
+    contentScroll(position) {
+      this.isShowBackTop = -position.y > 1000 ? !this.isShowBackTop : this.isShowBackTop
+    },
+    // loadMore() {
+    //   this.getHomeGoods(this.currentType)
+    //   // 因为better-scroll和图片的异步加载问题，需要调用refresh刷新一下
+    //   this.$refs.scroll.scroll.refresh()
+    // },
     //网络请求相关：
     getHomeMultidata() {
       //1.请求多个数据
@@ -98,7 +114,7 @@ export default {
         // this.result = res;
         this.banners = res.data.banner.list;
         this.recommends = res.data.recommend.list;
-        // console.log(this.banners)
+        console.log(this.banners)
         // console.log(this.recommends)
       })
     },
@@ -107,6 +123,8 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
+
+        this.$refs.scroll.finishPullUp()
       })
     }
   }
@@ -142,7 +160,6 @@ export default {
    left: 0;
    right: 0;
    overflow: hidden;
-
  }
  /*.content {*/
  /*  height: calc(100% - 93px);*/

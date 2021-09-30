@@ -47,7 +47,7 @@ export default {
 
   .tab-bar-item img {
     width: 24px;
-    width: 24px;
+    height: 24px;
     margin-top: 3px;
      /* vertical-align: middle;   去掉 图片自带的 3像素 */
     vertical-align: middle;
