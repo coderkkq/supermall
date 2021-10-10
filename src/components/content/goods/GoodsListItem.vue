@@ -1,6 +1,6 @@
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <img v-lazy="showImage" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -18,6 +18,37 @@ export default {
       default() {
         return {}
       }
+    }
+  },
+  computed: {
+    showImage() {
+      return this.goodsItem.image || this.goodsItem.show.img
+    }
+  },
+  methods: {
+    imageLoad() {
+      if (this.$route.path.indexOf('/home')) {
+        // console.log('imageLoad');
+        this.$bus.$emit('homeItemImageLoad')
+      }else if (this.$route.path.indexOf('detail')) {
+        this.$bus.$emit('detailImageLoad')
+      }
+    },
+    itemClick() {
+      // console.log('我点击了图片跳转详情页')
+      // 第一种方式：
+      // 动态路由携带参数
+      //这里使用push()是为了可以按浏览器的回退，回退到首页
+      //而replace()不可以回退
+      this.$router.push('/detail/' + this.goodsItem.iid)
+
+      // 第二种方式:
+      // this.$router.push({
+      //   path: '/detail',
+      //   query: {
+      //     idd: this.goodsItem.iid
+      //   }
+      // })
     }
   }
 }
