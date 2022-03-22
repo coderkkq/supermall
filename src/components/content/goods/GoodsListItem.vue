@@ -46,7 +46,7 @@ export default {
       // this.$router.push({
       //   path: '/detail',
       //   query: {
-      //     idd: this.goodsItem.iid
+      //     iid: this.goodsItem.iid
       //   }
       // })
     }

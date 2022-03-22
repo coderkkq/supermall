@@ -12,7 +12,7 @@ export default {
   props: {
     path: String,
     activeColor: {
-      type: 'String',
+      type: String,
       default: 'red'
     }
   },
